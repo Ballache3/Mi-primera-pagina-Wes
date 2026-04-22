@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eduardo es gay?</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      background: #fff;
+      color: #111;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    #btn-area {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 200px;
+    }
+    button {
+      position: absolute;
+      padding: 14px 40px;
+      font-size: 18px;
+      font-weight: 500;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    button:hover { background: #f5f5f5; }
+    #btn-si { left: calc(50% - 140px); top: 50%; transform: translateY(-50%); }
+    #btn-no { left: calc(50% + 20px); top: 50%; transform: translateY(-50%); }
+    #msg {
+      margin-top: 2rem;
+      font-size: 24px;
+      font-weight: 500;
+      text-align: center;
+      min-height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Eduardo es gay?</h1>
+
+  <div id="btn-area">
+    <button id="btn-si">Si</button>
+    <button id="btn-no">No</button>
+  </div>
+
+  <div id="msg"></div>
+
+  <script>
+    const btnNo = document.getElementById('btn-no');
+    const btnSi = document.getElementById('btn-si');
+    const area = document.getElementById('btn-area');
+    const msg = document.getElementById('msg');
+
+    function getRandom(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function isNear(mx, my, bx, by, dist) {
+      return Math.hypot(mx - bx, my - by) < dist;
+    }
+
+    function moveBtn(btn, mouseX, mouseY) {
+      const ar = area.getBoundingClientRect();
+      const bw = btn.offsetWidth;
+      const bh = btn.offsetHeight;
+      let newLeft, newTop, attempts = 0;
+      do {
+        newLeft = getRandom(0, ar.width - bw);
+        newTop = getRandom(0, ar.height - bh);
+        attempts++;
+      } while (attempts < 20 && isNear(mouseX - ar.left, mouseY - ar.top, newLeft + bw/2, newTop + bh/2, 120));
+      btn.style.left = newLeft + 'px';
+      btn.style.top = newTop + 'px';
+      btn.style.transform = 'none';
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      const ar = area.getBoundingClientRect();
+      const mx = e.clientX - ar.left;
+      const my = e.clientY - ar.top;
+      const bx = btnNo.offsetLeft + btnNo.offsetWidth / 2;
+      const by = btnNo.offsetTop + btnNo.offsetHeight / 2;
+      if (isNear(mx, my, bx, by, 100)) {
+        moveBtn(btnNo, e.clientX, e.clientY);
+      }
+    });
+
+    btnNo.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const t = e.touches[0];
+      moveBtn(btnNo, t.clientX, t.clientY);
+    });
+
+    btnSi.addEventListener('click', () => {
+      msg.textContent = 'En efecto eres gay';
+    });
+
+    btnNo.addEventListener('click', () => {
+      msg.textContent = 'Como llegaste a darle click??';
+    });
+  </script>
+</body>
+</html>
